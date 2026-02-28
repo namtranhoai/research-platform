@@ -116,9 +116,15 @@ jobs:
 
       - name: Configure kubeconfig
         run: |
+          set -euo pipefail
+          if [ -z "${{ secrets.KUBE_CONFIG }}" ]; then
+            echo "::error title=Missing Kubernetes credentials::The secret 'KUBE_CONFIG' is empty for environment '${{ matrix.environment }}'. Add it in GitHub → Settings → Environments → ${{ matrix.environment }} → Secrets."
+            exit 1
+          fi
           mkdir -p ~/.kube
           echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > ~/.kube/config
           chmod 600 ~/.kube/config
+          kubectl version --client=true
 
       - name: Prepare Kustomize
         run: |
