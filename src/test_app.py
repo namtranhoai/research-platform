@@ -1,5 +1,6 @@
 """Tests for Research Platform API."""
 import pytest
+
 from app import app
 
 

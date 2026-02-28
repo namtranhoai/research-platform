@@ -124,6 +124,74 @@ kustomize edit set image ghcr.io/PLACEHOLDER_ORG/research-platform=ghcr.io/OWNER
 kustomize build . | kubectl apply -f -
 ```
 
+### Local Kubernetes (kind / minikube)
+
+This repo includes a local overlay at `k8s/overlays/local` that runs the image `research-platform:local`
+and sets `imagePullPolicy: IfNotPresent` so Kubernetes can use the image you load into the cluster.
+
+#### Option A: kind (recommended for quick local testing)
+
+```bash
+# 1) Create a kind cluster
+kind create cluster --name research-platform
+
+# 2) Build the local Docker image
+docker build -t research-platform:local .
+
+# 3) Load the image into kind nodes
+kind load docker-image research-platform:local --name research-platform
+
+# 4) Deploy the local overlay
+kubectl apply -k k8s/overlays/local
+
+# 5) Wait for rollout
+kubectl -n research-platform-local rollout status deploy/research-platform
+
+# 6) Access the service (port-forward works on both kind + minikube)
+kubectl -n research-platform-local port-forward svc/research-platform 8080:80
+
+# 7) In another terminal:
+# curl http://localhost:8080/health
+```
+
+Cleanup:
+
+```bash
+kind delete cluster --name research-platform
+```
+
+#### Option B: minikube
+
+```bash
+# 1) Start minikube (choose a driver that works on your machine)
+minikube start
+
+# 2) Build the local Docker image (host Docker)
+docker build -t research-platform:local .
+
+# 3) Load the image into minikube
+minikube image load research-platform:local
+
+# 4) Deploy the local overlay
+kubectl apply -k k8s/overlays/local
+
+# 5) Wait for rollout
+kubectl -n research-platform-local rollout status deploy/research-platform
+
+# 6) Access the service
+kubectl -n research-platform-local port-forward svc/research-platform 8080:80
+
+# 7) In another terminal:
+# curl http://localhost:8080/health
+```
+
+Alternative minikube build (PowerShell), builds directly into minikube’s Docker daemon:
+
+```bash
+minikube docker-env --shell powershell | Invoke-Expression
+docker build -t research-platform:local .
+```
+
 ### GitHub Actions Setup
 
 1. **Environments**: Create `dev`, `staging`, `prod` in repo Settings → Environments.

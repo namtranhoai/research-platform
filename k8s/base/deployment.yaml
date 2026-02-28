@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: ghcr.io/PLACEHOLDER_ORG/research-platform:latest
+          image: ghcr.io/PLACEHOLDER_ORG/research-platform
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
