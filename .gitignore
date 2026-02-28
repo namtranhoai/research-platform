@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+
+# Terraform
+infra/terraform/*.tfstate
+infra/terraform/*.tfstate.*
+infra/terraform/.terraform/
+infra/terraform/config-*.json
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
